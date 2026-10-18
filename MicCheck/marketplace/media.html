@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Mic Check marketplace media</title>
+<!-- Rendered at 1920x960 by make-marketplace.ps1, once per page: media.html?page=thumb|follow|failures|settings.
+     Key images (*.svg) and pi-demo.html come from MicCheck.exe --svg, in the same folder. -->
+<style>
+  html, body { margin: 0; width: 1920px; height: 960px; overflow: hidden; }
+  body { background: radial-gradient(ellipse at 75% 40%, #1f2a3d 0%, #0b0f17 70%); color: #e5e7eb; font-family: "Segoe UI", Arial, sans-serif; }
+  .page { display: none; position: absolute; inset: 0; padding: 110px 120px; box-sizing: border-box; }
+  .page.on { display: flex; align-items: center; gap: 70px; }
+  .text { flex: 0 0 640px; }
+  h1 { font-size: 132px; margin: 0 0 18px; font-weight: 800; letter-spacing: -2px; color: #fff; }
+  h2 { font-size: 72px; margin: 0 0 36px; font-weight: 800; line-height: 1.08; color: #fff; }
+  .tag { font-size: 44px; color: #cbd5e1; line-height: 1.3; margin: 0; }
+  ul { list-style: none; padding: 0; margin: 0; }
+  li { font-size: 34px; color: #cbd5e1; line-height: 1.35; margin: 0 0 26px; padding-left: 46px; position: relative; }
+  li::before { content: ""; position: absolute; left: 0; top: 14px; width: 22px; height: 22px; border-radius: 6px; background: #22c55e; }
+  .keys { flex: 1; display: grid; gap: 44px; justify-content: center; align-content: center; }
+  .key { text-align: center; }
+  .key img { width: 280px; height: 280px; border-radius: 32px; display: block; box-shadow: 0 0 0 10px #1f2937, 0 30px 60px rgba(0,0,0,.6); }
+  .key span { display: block; margin-top: 30px; font-size: 28px; color: #94a3b8; }
+  .big .key img { width: 300px; height: 300px; border-radius: 34px; }
+  .cols3 { grid-template-columns: repeat(3, auto); }
+  .cols2 { grid-template-columns: repeat(2, auto); gap: 44px 70px; }
+  .cols2 .key img { width: 260px; height: 260px; border-radius: 30px; }
+  .brand { display: flex; align-items: center; gap: 28px; margin-bottom: 28px; }
+  .brand img { width: 120px; height: 120px; border-radius: 26px; }
+  .settings { display: flex; gap: 56px; align-items: center; }
+  .settings iframe { width: 660px; height: 340px; border: 0; border-radius: 16px; background: #2d2d2d; box-shadow: 0 30px 60px rgba(0,0,0,.6); }
+  .settings .keys { gap: 40px; }
+  .settings .key img { width: 200px; height: 200px; border-radius: 24px; }
+</style>
+</head>
+<body>
+  <section class="page" id="thumb">
+    <div class="text">
+      <div class="brand"><img src="plugin@2x.png"></div>
+      <h1>Mic Check</h1>
+      <p class="tag">Know people can hear you, with one glance at your Stream Deck.</p>
+    </div>
+    <div class="keys cols3 big">
+      <div class="key"><img src="2-teams-talking.svg"></div>
+      <div class="key"><img src="4-teams-nosignal.svg"></div>
+      <div class="key"><img src="5-muted.svg"></div>
+    </div>
+  </section>
+
+  <section class="page" id="follow">
+    <div class="text">
+      <h2>Follows the mic your call is actually using</h2>
+      <ul>
+        <li>Detects Teams, Discord, Zoom, or any app recording from a mic</li>
+        <li>A scrolling meter shows the last few seconds, so you can glance down after you speak</li>
+        <li>Names the mic in use, so you can spot the wrong one</li>
+      </ul>
+    </div>
+    <div class="keys cols3">
+      <div class="key"><img src="2-teams-talking.svg"></div>
+      <div class="key"><img src="11-discord-talking.svg"></div>
+      <div class="key"><img src="12-zoom-talking.svg"></div>
+    </div>
+  </section>
+
+  <section class="page" id="failures">
+    <div class="text">
+      <h2>Catches the silent failures</h2>
+      <ul>
+        <li>No signal: a headset mute switch or a disconnected mic</li>
+        <li>Muted in Windows</li>
+        <li>Input level turned down too low</li>
+        <li>Your call app is using a different mic than you expect</li>
+      </ul>
+    </div>
+    <div class="keys cols2">
+      <div class="key"><img src="4-teams-nosignal.svg"><span>No signal</span></div>
+      <div class="key"><img src="5-muted.svg"><span>Muted in Windows</span></div>
+      <div class="key"><img src="7-low-input.svg"><span>Input level low</span></div>
+      <div class="key"><img src="10-other-mic.svg"><span>Different mic</span></div>
+    </div>
+  </section>
+
+  <section class="page" id="settings">
+    <div class="text" style="flex-basis: 560px">
+      <h2>Test before the call, or keep it live</h2>
+      <ul>
+        <li>Press the key for a quick mic test when nothing is recording</li>
+        <li>Optionally keep the meter live all the time</li>
+        <li>Follow any mic automatically, the Windows default, or one specific mic</li>
+      </ul>
+    </div>
+    <div class="settings">
+      <div class="keys">
+        <div class="key"><img src="1-idle.svg"><span>Idle</span></div>
+        <div class="key"><img src="6-test.svg"><span>Testing</span></div>
+      </div>
+      <iframe src="pi-demo.html"></iframe>
+    </div>
+  </section>
+
+<script>
+  const page = new URLSearchParams(location.search).get("page") || "thumb";
+  document.getElementById(page).classList.add("on");
+</script>
+</body>
+</html>

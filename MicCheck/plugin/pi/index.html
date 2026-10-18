@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Mic Check settings</title>
+<style>
+  body { margin: 0; padding: 4px 12px 12px 0; background: transparent; color: #d8d8d8; font: 9pt "Segoe UI", Arial, sans-serif; }
+  .row { display: flex; align-items: center; min-height: 32px; margin: 2px 0; }
+  .row > label:first-child { flex: 0 0 94px; text-align: right; padding-right: 12px; color: #969696; }
+  select { flex: 1; min-width: 0; height: 26px; background: #3d3d3d; color: #d8d8d8; border: none; border-radius: 3px; padding: 0 6px; font: inherit; }
+  select:focus { outline: 1px solid #5a5a5a; }
+  .check { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .help { margin: 2px 0 8px 106px; color: #8a8a8a; line-height: 1.4; }
+  .help b { color: #b8b8b8; font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <label for="device">Microphone</label>
+    <select id="device"><option value="auto">Auto: follow the app using a mic</option></select>
+  </div>
+  <div class="help" id="deviceHelp"></div>
+
+  <div class="row">
+    <label for="testSeconds">Press to test</label>
+    <select id="testSeconds">
+      <option value="5">5 seconds</option>
+      <option value="10">10 seconds</option>
+      <option value="20">20 seconds</option>
+      <option value="30">30 seconds</option>
+      <option value="60">60 seconds</option>
+    </select>
+  </div>
+
+  <div class="row">
+    <label></label>
+    <label class="check"><input type="checkbox" id="alwaysListen"> Always listen</label>
+  </div>
+  <div class="help">Keeps the meter live even when no app is using the mic. Windows will show
+    <b>MicCheck</b> as using your microphone, and the press-to-test option is not needed.</div>
+
+<script>
+  const ACTION = "com.bp2008.miccheck.meter";
+  let ws, context, settings = {}, devices = [], defaultComm = "";
+
+  const $ = id => document.getElementById(id);
+  const help = {
+    auto: "Meters whichever mic an app is recording from, preferring <b>Teams</b>, <b>Discord</b> and <b>Zoom</b>. When nothing is recording it shows your Windows default communications mic.",
+    default: "Always meters your Windows default communications mic, and warns if a call app is using a different one.",
+    fixed: "Always meters this mic, and warns if a call app is using a different one."
+  };
+
+  // Called by Stream Deck when the property inspector opens
+  function connectElgatoStreamDeckSocket(port, uuid, registerEvent, info, actionInfo) {
+    context = uuid;
+    try { settings = JSON.parse(actionInfo).payload.settings || {}; } catch (e) { settings = {}; }
+    ws = new WebSocket("ws://127.0.0.1:" + port);
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ event: registerEvent, uuid: uuid }));
+      ws.send(JSON.stringify({ event: "sendToPlugin", action: ACTION, context: uuid, payload: { request: "devices" } }));
+    };
+    ws.onmessage = msg => {
+      const m = JSON.parse(msg.data);
+      if (m.event === "sendToPropertyInspector" && m.payload && m.payload.type === "devices") {
+        devices = m.payload.devices || [];
+        defaultComm = m.payload.defaultComm || "";
+        render();
+      } else if (m.event === "didReceiveSettings" && m.payload) {
+        settings = m.payload.settings || {};
+        render();
+      }
+    };
+    render();
+  }
+
+  function render() {
+    const sel = $("device"), current = settings.device || "auto";
+    sel.innerHTML = "";
+    add(sel, "auto", "Auto: follow the app using a mic");
+    add(sel, "default", "Windows default" + (defaultComm ? " (" + defaultComm + ")" : ""));
+    for (const d of devices) add(sel, d.id, d.name);
+    if (current !== "auto" && current !== "default" && !devices.some(d => d.id === current))
+      add(sel, current, (settings.deviceName || "Saved mic") + " (not connected)");
+    sel.value = current;
+    $("deviceHelp").innerHTML = help[current === "auto" || current === "default" ? current : "fixed"];
+    $("testSeconds").value = String(settings.testSeconds || 10);
+    $("alwaysListen").checked = settings.alwaysListen === true;
+    $("testSeconds").disabled = $("alwaysListen").checked;
+  }
+
+  function add(sel, value, text) {
+    const o = document.createElement("option");
+    o.value = value; o.textContent = text;
+    sel.appendChild(o);
+  }
+
+  function save() {
+    const dev = $("device").value;
+    const chosen = devices.find(d => d.id === dev);
+    settings = {
+      device: dev,
+      deviceName: chosen ? chosen.name : (dev === settings.device ? settings.deviceName || "" : ""),
+      testSeconds: parseInt($("testSeconds").value, 10),
+      alwaysListen: $("alwaysListen").checked
+    };
+    if (ws && ws.readyState === 1) ws.send(JSON.stringify({ event: "setSettings", context: context, payload: settings }));
+    render();
+  }
+
+  for (const id of ["device", "testSeconds", "alwaysListen"]) $(id).addEventListener("change", save);
+</script>
+</body>
+</html>

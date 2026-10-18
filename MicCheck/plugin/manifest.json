@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+  "UUID": "com.bp2008.miccheck",
+  "Name": "Mic Check",
+  "Version": "1.0.0.0",
+  "Author": "bp2008",
+  "Description": "Live microphone level meter. Follows whichever mic Teams, Discord, Zoom or any other app is recording from, and warns when it is muted, silent, set too low, or the wrong mic.",
+  "URL": "https://github.com/bp2008/streamdeck-miccheck",
+  "SupportURL": "https://github.com/bp2008/streamdeck-miccheck/issues",
+  "Category": "Mic Check",
+  "CategoryIcon": "imgs/category",
+  "Icon": "imgs/plugin",
+  "CodePath": "MicCheck.exe",
+  "SDKVersion": 3,
+  "Software": { "MinimumVersion": "6.9" },
+  "OS": [ { "Platform": "windows", "MinimumVersion": "10" } ],
+  "Actions": [
+    {
+      "UUID": "com.bp2008.miccheck.meter",
+      "Name": "Mic Meter",
+      "Icon": "imgs/action",
+      "Tooltip": "Live level of the mic your call app is using. Press when idle for a quick mic test.",
+      "Controllers": [ "Keypad" ],
+      "PropertyInspectorPath": "pi/index.html",
+      "SupportedInMultiActions": false,
+      "UserTitleEnabled": false,
+      "States": [ { "Image": "imgs/key", "ShowTitle": false } ]
+    }
+  ]
+}
